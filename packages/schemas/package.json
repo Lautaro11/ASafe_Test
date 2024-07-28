@@ -1,0 +1,12 @@
+{
+  "name": "schemas",
+  "version": "0.0.0",
+  "main": "index.ts",
+  "license": "MIT",
+  "author": "Lautaro Robles",
+  "scripts": {},
+  "dependencies": {
+    "fastify-zod": "^1.4.0",
+    "zod": "^3.23.8"
+  }
+}

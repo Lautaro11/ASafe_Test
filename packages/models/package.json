@@ -4,6 +4,14 @@
   "main": "index.ts",
   "license": "MIT",
   "author": "Lautaro Robles",
+  "dependencies": {
+    "@prisma/client": "^5.16.2",
+    "cuid": "^3.0.0"
+  },
+  "devDependencies": {
+    "prisma": "^5.16.2",
+    "typescript": "^5.5.3"
+  },
   "scripts": {
   }
 }

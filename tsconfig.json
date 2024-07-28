@@ -25,14 +25,15 @@
     // "moduleDetection": "auto",                        /* Control what method is used to detect module-format JS files. */
 
     /* Modules */
-    "module": "nodenext",
+    "module": "NodeNext",
     // "rootDir": "./",                                  /* Specify the root folder within your source files. */
-    "moduleResolution": "nodenext",
+    "moduleResolution": "NodeNext",
     "baseUrl": ".",
     "paths": {
-      "models/*": ["packages/models/*"],
-      "services/*": ["packages/services/*"],
-      "api/*": ["packages/api/*"]
+      "models/*": ["packages/models/src/*"],
+      "services/*": ["packages/services/src/*"],
+      "api/*": ["packages/api/*"],
+      "schemas/*": ["packages/schemas/src/*"],
     },
     // "rootDirs": [],                                   /* Allow multiple folders to be treated as one when resolving modules. */
     // "typeRoots": [],                                  /* Specify multiple folders that act like './node_modules/@types'. */
