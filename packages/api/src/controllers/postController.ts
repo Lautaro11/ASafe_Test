@@ -1,0 +1,136 @@
+import { FastifyReply, FastifyRequest } from "fastify";
+
+import {
+  CreatePostInput,
+  GetPostByIdInput,
+  UpdatePostInput,
+} from "schemas/src/postsSchema";
+import {
+  createPostService,
+  updatePostService,
+  getPostByIdService,
+  getPostsService,
+  deletePostService,
+} from "services/src/postService";
+
+export async function createPostHandler(
+  request: FastifyRequest<{
+    Body: CreatePostInput;
+  }>,
+  reply: FastifyReply
+) {
+  try {
+    const { title, content } = request.body;
+    const user = request.user;
+
+    const post = await createPostService(user.id, { title, content });
+
+    reply.status(201).send(post);
+  } catch (e) {
+    console.log(e);
+    return reply.code(500).send(e);
+  }
+}
+
+export async function getPostByIdHandler(
+  request: FastifyRequest<{
+    Params: GetPostByIdInput;
+  }>,
+  reply: FastifyReply
+) {
+  const { id } = request.params;
+
+  try {
+    const post = await getPostByIdService(id);
+
+    reply.send(post);
+  } catch (e) {
+    console.log(e);
+    return reply.code(404).send({ error: "Post not found" });
+  }
+}
+
+export async function getPostsHandler(
+  request: FastifyRequest,
+  reply: FastifyReply
+) {
+  try {
+    const posts = await getPostsService();
+    reply.send(posts);
+  } catch (e) {
+    console.log("Error during getting posts:", e);
+    reply.status(500).send({ error: "Internal server error" });
+  }
+}
+
+export async function updatePostHandler(
+  request: FastifyRequest<{
+    Body: UpdatePostInput;
+    Params: GetPostByIdInput;
+  }>,
+  reply: FastifyReply
+) {
+  const post = await getPostByIdService(request.params.id);
+  const dataToUpdate = request.body;
+
+  if (!post) {
+    return reply.status(404).send({ error: "Post not found" });
+  }
+
+  if (post.authorId !== request.user.id) {
+    return reply.status(403).send({
+      error: "Forbidden: You do not have permission to update this post",
+    });
+  }
+
+  try {
+    let updateData: any = {};
+    if (dataToUpdate.title != post.title) updateData.title = dataToUpdate.title;
+    if (dataToUpdate.content != post.content)
+      updateData.content = dataToUpdate.content;
+
+    let updatedPost = {};
+    if (Object.keys(updateData).length > 0) {
+      updatedPost = await updatePostService(
+        request.user.id,
+        post.id,
+        updateData
+      );
+    } else {
+      updatedPost = post;
+    }
+
+    reply.send(updatedPost);
+  } catch (e) {
+    console.log("Error during post update:", e);
+    reply.status(500).send({ error: "Internal server error" });
+  }
+}
+
+export async function deletePostHandler(
+  request: FastifyRequest<{
+    Params: GetPostByIdInput;
+  }>,
+  reply: FastifyReply
+) {
+  const post = await getPostByIdService(request.params.id);
+
+  if (!post) {
+    return reply.status(404).send({ error: "Post not found" });
+  }
+
+  if (post.authorId !== request.user.id) {
+    return reply.status(403).send({
+      error: "Forbidden: You do not have permission to delete this post",
+    });
+  }
+
+  try {
+    const deletedPost = await deletePostService(post.authorId, post.id);
+
+    reply.send({ message: "Post deleted successfully" });
+  } catch (e) {
+    console.log("Error during post deletion:", e);
+    reply.status(500).send({ error: "Internal server error" });
+  }
+}

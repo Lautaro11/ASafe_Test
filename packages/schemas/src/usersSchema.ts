@@ -30,7 +30,7 @@ const updateUserSchema = z
       data.profilePicture !== undefined,
     {
       message:
-        "At least one field (username, description or profilePicture) must be provided",
+        "At least one field (username, description, name or profilePicture) must be provided",
     }
   );
 
@@ -112,9 +112,10 @@ export type LoginInput = z.infer<typeof loginSchema>;
 export type UpdateUserInput = z.infer<typeof updateUserSchema>;
 
 export type GetUserByIdParamsInput = z.infer<typeof getUserByIdParamsSchema>;
+
 export type GetUserByIdQueryInput = z.infer<typeof getUserByIdQuerySchema>;
 
-export let { schemas: userSchemas, $ref } = buildJsonSchemas({
+export const { schemas: userSchemas, $ref } = buildJsonSchemas({
   createUserSchema,
   createUserResponseSchema,
   loginSchema,
@@ -124,4 +125,6 @@ export let { schemas: userSchemas, $ref } = buildJsonSchemas({
   getUserByIdParamsSchema,
   getUserByIdQuerySchema,
   getUserByIdResponseSchema,
+}, {
+  $id: 'userSchema',
 });

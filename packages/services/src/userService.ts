@@ -32,6 +32,9 @@ export async function updateUserService(
   dataToUpdate: UpdateUserInput
 ) {
   try {
+    if (!(await getUserByIdModel(id))){
+      throw {message: "Unauthorized user to update"}
+    }
     //TODO: Upload photo to S3 and return the url
     if (dataToUpdate.username?.length && await getUserByUsernameModel(dataToUpdate.username)) {
       throw { message: "User with this username already exists" };
@@ -47,7 +50,6 @@ export async function updateUserService(
 
 export async function getUserByIdService(id: string, includePosts?: boolean | undefined) {
   try {
-    
     let user = await getUserByIdModel(id, includePosts);
     return user;
   } catch (e) {

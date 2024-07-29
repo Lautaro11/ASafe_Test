@@ -1,11 +1,11 @@
 {
   "name": "api",
   "version": "0.0.0",
-  "main": "index.ts",
+  "main": "src/index.ts",
   "license": "MIT",
   "author": "Lautaro Robles",
   "scripts": {
-    "start": "ts-node index.ts",
+    "start": "ts-node src/index.ts",
     "dev": "ts-node-dev --respawn --transpile-only --exit-child src/index.ts",
     "build": "tsc"
   },

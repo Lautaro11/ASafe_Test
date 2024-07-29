@@ -1,9 +1,9 @@
 import Fastify, { FastifyRequest, FastifyReply } from "fastify";
 import fjwt, { JWT } from "@fastify/jwt";
 import { userSchemas } from "schemas/src/usersSchema";
-// import { postSchemas } from "schemas/src/postsSchema";
+import { postSchemas } from "schemas/src/postsSchema";
 import userRoutes from "./routes/userRoutes";
-// import postRoutes from "./routes/postRoutes";
+import postRoutes from "./routes/postRoutes";
 //swagger
 import swagger from "@fastify/swagger";
 import swaggerUi from "@fastify/swagger-ui";
@@ -43,7 +43,7 @@ function buildServer() {
     return next();
   });
 
-  for (const schema of [...userSchemas]) {
+  for (const schema of [...userSchemas, ...postSchemas]) {
     server.addSchema(schema);
   }
 
@@ -93,7 +93,7 @@ function buildServer() {
   });
 
   server.register(userRoutes, { prefix: "/users" });
-  // server.register(postRoutes, { prefix: "/posts" });
+  server.register(postRoutes, { prefix: "/posts" });
 
   return server;
 }
