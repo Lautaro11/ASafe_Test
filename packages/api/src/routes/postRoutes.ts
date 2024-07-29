@@ -25,13 +25,13 @@ async function postRoutes(server: FastifyInstance) {
   );
 
   server.patch(
-    "/",
+    "/:id",
     {
       preHandler: server.authenticateJWT,
       schema: {
         tags: ["Posts"],
-        body: $ref("updatePostSchema"),
         params: $ref("getPostByIdSchema"),
+        body: $ref("updatePostSchema"),
         response: {
           201: $ref("updatePostResponseSchema"),
         },

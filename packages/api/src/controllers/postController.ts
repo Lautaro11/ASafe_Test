@@ -66,8 +66,8 @@ export async function getPostsHandler(
 
 export async function updatePostHandler(
   request: FastifyRequest<{
-    Body: UpdatePostInput;
     Params: GetPostByIdInput;
+    Body: UpdatePostInput;
   }>,
   reply: FastifyReply
 ) {
