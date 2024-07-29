@@ -105,6 +105,15 @@ const getUserByIdResponseSchema = z.object({
   updatedAt: z.string().datetime().optional(),
 });
 
+const profilePictureSchema = z.object({
+  profilePicture: z.string().base64(),
+});
+
+const profilePictureResponseSchema = z.object({
+  id: z.string(),
+  profilePicture: z.string().url(),
+});
+
 export type CreateUserInput = z.infer<typeof createUserSchema>;
 
 export type LoginInput = z.infer<typeof loginSchema>;
@@ -115,16 +124,23 @@ export type GetUserByIdParamsInput = z.infer<typeof getUserByIdParamsSchema>;
 
 export type GetUserByIdQueryInput = z.infer<typeof getUserByIdQuerySchema>;
 
-export const { schemas: userSchemas, $ref } = buildJsonSchemas({
-  createUserSchema,
-  createUserResponseSchema,
-  loginSchema,
-  loginResponseSchema,
-  updateUserResponseSchema,
-  updateUserSchema,
-  getUserByIdParamsSchema,
-  getUserByIdQuerySchema,
-  getUserByIdResponseSchema,
-}, {
-  $id: 'userSchema',
-});
+export type ProfilePictureInput = z.infer<typeof profilePictureSchema>;
+
+export const { schemas: userSchemas, $ref } = buildJsonSchemas(
+  {
+    createUserSchema,
+    createUserResponseSchema,
+    loginSchema,
+    loginResponseSchema,
+    updateUserResponseSchema,
+    updateUserSchema,
+    getUserByIdParamsSchema,
+    getUserByIdQuerySchema,
+    getUserByIdResponseSchema,
+    profilePictureResponseSchema,
+    profilePictureSchema,
+  },
+  {
+    $id: "userSchema",
+  }
+);

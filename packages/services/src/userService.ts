@@ -1,4 +1,8 @@
-import { CreateUserInput, LoginInput, UpdateUserInput } from "schemas/src/usersSchema";
+import {
+  CreateUserInput,
+  LoginInput,
+  UpdateUserInput,
+} from "schemas/src/usersSchema";
 import {
   createUserModel,
   getAllUsersModel,
@@ -7,6 +11,8 @@ import {
   getUserByUsernameModel,
   updateUserModel,
 } from "models/src/usersModel";
+import { downloadFileFromS3, uploadToS3 } from "utils/src/s3";
+import { getMimeTypeFromBase64 } from "utils/src/utils";
 import bcrypt from "bcrypt";
 
 export async function createUserService(input: CreateUserInput) {
@@ -32,15 +38,38 @@ export async function updateUserService(
   dataToUpdate: UpdateUserInput
 ) {
   try {
-    if (!(await getUserByIdModel(id))){
-      throw {message: "Unauthorized user to update"}
+    if (!(await getUserByIdModel(id))) {
+      throw { message: "Unauthorized user to update" };
     }
     //TODO: Upload photo to S3 and return the url
-    if (dataToUpdate.username?.length && await getUserByUsernameModel(dataToUpdate.username)) {
-      throw { message: "User with this username already exists" };
-    } else { delete dataToUpdate.username}
 
-    const user = await updateUserModel(id, dataToUpdate);
+    let updatedData = {} as any;
+    updatedData = { ...dataToUpdate };
+    if (dataToUpdate.profilePicture) {
+      const mimeType =
+        (await getMimeTypeFromBase64(dataToUpdate.profilePicture)) ||
+        "image/jpeg";
+      let path = `users/${id}/profilePhoto`;
+      const options = {
+        ContentEncoding: "base64",
+        ContentType: mimeType,
+      };
+
+      const s3Path = await uploadToS3(path, dataToUpdate.profilePicture, options);
+
+      updatedData.profilePicture = s3Path;
+    }
+
+    if (
+      dataToUpdate.username?.length &&
+      (await getUserByUsernameModel(dataToUpdate.username))
+    ) {
+      throw { message: "User with this username already exists" };
+    } else {
+      delete updatedData.username;
+    }
+
+    const user = await updateUserModel(id, updatedData);
     return user;
   } catch (e) {
     console.log(e);
@@ -48,7 +77,10 @@ export async function updateUserService(
   }
 }
 
-export async function getUserByIdService(id: string, includePosts?: boolean | undefined) {
+export async function getUserByIdService(
+  id: string,
+  includePosts?: boolean | undefined
+) {
   try {
     let user = await getUserByIdModel(id, includePosts);
     return user;
@@ -74,10 +106,7 @@ export async function loginService(input: LoginInput) {
     if (!user) {
       throw { message: "Invalid email or password" };
     }
-    const isPasswordValid = await bcrypt.compare(
-      input.password,
-      user.password
-    );
+    const isPasswordValid = await bcrypt.compare(input.password, user.password);
 
     if (isPasswordValid) {
       return {
@@ -87,9 +116,26 @@ export async function loginService(input: LoginInput) {
       };
     }
     return {};
-  }
-  catch (e) {
+  } catch (e) {
     console.log(e);
     throw { message: "Invalid email or password" };
-  } 
+  }
+}
+
+export async function getUserPictureService(userId: string) {
+  try {
+   const user = await getUserByIdModel(userId);
+
+   if (!user?.profilePicture) {
+    throw { message: "User dont have profilePicture" };
+   }
+
+   let profilePictureData = await downloadFileFromS3(user.profilePicture);
+
+   return profilePictureData;
+
+  } catch (error) {
+    console.log(error);
+    throw { message: "Failed to getUserPicture from s3" };
+  }
 }

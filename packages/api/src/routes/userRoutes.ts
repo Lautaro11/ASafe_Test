@@ -1,22 +1,24 @@
-import { FastifyInstance } from 'fastify';
-import { $ref } from 'schemas/src/usersSchema';
+import { FastifyInstance } from "fastify";
+import { $ref } from "schemas/src/usersSchema";
 import {
   getUsersHandler,
   createUserHandler,
   loginHandler,
   getUserByIdHandler,
   updateUserHandler,
-} from '../controllers/userController';
+  profilePictureHandler,
+  getProfilePictureHandler,
+} from "../controllers/userController";
 
 async function userRoutes(server: FastifyInstance) {
   server.post(
-    '/login',
+    "/login",
     {
       schema: {
         tags: ["Users"],
-        body: $ref('loginSchema'),
+        body: $ref("loginSchema"),
         response: {
-          200: $ref('loginResponseSchema'),
+          200: $ref("loginResponseSchema"),
         },
       },
     },
@@ -24,13 +26,13 @@ async function userRoutes(server: FastifyInstance) {
   );
 
   server.post(
-    '/',
+    "/",
     {
       schema: {
         tags: ["Users"],
-        body: $ref('createUserSchema'),
+        body: $ref("createUserSchema"),
         response: {
-          201: $ref('createUserResponseSchema'),
+          201: $ref("createUserResponseSchema"),
         },
       },
     },
@@ -38,14 +40,14 @@ async function userRoutes(server: FastifyInstance) {
   );
 
   server.patch(
-    '/',
+    "/",
     {
       preHandler: server.authenticateJWT,
       schema: {
         tags: ["Users"],
-        body: $ref('updateUserSchema'),
+        body: $ref("updateUserSchema"),
         response: {
-          201: $ref('updateUserResponseSchema'),
+          201: $ref("updateUserResponseSchema"),
         },
         security: [
           {
@@ -58,7 +60,7 @@ async function userRoutes(server: FastifyInstance) {
   );
 
   server.get(
-    '/',
+    "/",
     {
       preHandler: server.authenticateJWT,
       schema: {
@@ -74,15 +76,15 @@ async function userRoutes(server: FastifyInstance) {
   );
 
   server.get(
-    '/:id',
+    "/:id",
     {
       preHandler: server.authenticateJWT,
       schema: {
         tags: ["Users"],
-        params: $ref('getUserByIdParamsSchema'),
-        querystring: $ref('getUserByIdQuerySchema'),
+        params: $ref("getUserByIdParamsSchema"),
+        querystring: $ref("getUserByIdQuerySchema"),
         response: {
-          200: $ref('getUserByIdResponseSchema'),
+          200: $ref("getUserByIdResponseSchema"),
         },
         security: [
           {
@@ -92,6 +94,35 @@ async function userRoutes(server: FastifyInstance) {
       },
     },
     getUserByIdHandler
+  );
+
+  server.put(
+    "/profilePicture",
+    {
+      preHandler: server.authenticateJWT,
+      schema: {
+        tags: ["Users"],
+        body: $ref("profilePictureSchema"),
+        response: {
+          200: $ref("profilePictureResponseSchema"),
+        },
+      },
+    },
+    profilePictureHandler
+  );
+
+  server.get(
+    "/profilePicture",
+    {
+      preHandler: server.authenticateJWT,
+      schema: {
+        tags: ["Users"],
+        response: {
+          200: $ref("profilePictureResponseSchema"),
+        },
+      },
+    },
+    getProfilePictureHandler
   );
 }
 

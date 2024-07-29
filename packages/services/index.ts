@@ -1,7 +1,4 @@
 import * as userService from "./src/userService";
-// import postService from './src/postService';
-
-
-const postService = {};
+import * as postService from './src/postService';
 
 export { userService, postService };

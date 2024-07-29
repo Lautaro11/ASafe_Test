@@ -12,6 +12,7 @@ import { authenticateJWT } from "./middlewares/authMiddleware";
 //websocket
 import websocket from "@fastify/websocket";
 import { WebSocket as WS } from "ws";
+import * as dotenv from "dotenv";
 
 const clients = new Set<WS>();
 
@@ -43,6 +44,7 @@ export const notifyClients = (message: string) => {
 };
 
 function buildServer() {
+  dotenv.config();
   const server = Fastify({ logger: true });
 
   server.register(fjwt, {
@@ -112,21 +114,30 @@ function buildServer() {
   server.register(websocket);
 
   server.register(async (fastify) => {
-    fastify.get("/ws", { websocket: true }, (connection, request) => {
-      clients.add(connection);
+    fastify.get(
+      "/ws",
+      {
+        websocket: true,
+        schema: {
+          hide: true,
+        },
+      },
+      (connection, request) => {
+        clients.add(connection);
 
-      connection.on("message", (message: string) => {
-        for (const client of clients) {
-          if (client.readyState === WS.OPEN) {
-            client.send(message);
+        connection.on("message", (message: string) => {
+          for (const client of clients) {
+            if (client.readyState === WS.OPEN) {
+              client.send(message);
+            }
           }
-        }
-      });
+        });
 
-      connection.on("close", () => {
-        clients.delete(connection);
-      });
-    });
+        connection.on("close", () => {
+          clients.delete(connection);
+        });
+      }
+    );
   });
 
   server.get("/notifications", (request, reply) => {

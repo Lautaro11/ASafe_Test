@@ -6,6 +6,7 @@ import {
   GetUserByIdParamsInput,
   GetUserByIdQueryInput,
   UpdateUserInput,
+  ProfilePictureInput,
 } from "schemas/src/usersSchema";
 import {
   createUserService,
@@ -13,6 +14,7 @@ import {
   loginService,
   getUserByIdService,
   getUsersService,
+  getUserPictureService,
 } from "services/src/userService";
 import { notifyClients } from "../server";
 
@@ -49,7 +51,7 @@ export async function loginHandler(
   const { email, password } = request.body;
 
   try {
-    const user = await loginService({password, email});
+    const user = await loginService({ password, email });
 
     if (user.id) {
       const token = request.server.jwt.sign({
@@ -69,7 +71,6 @@ export async function loginHandler(
   }
 }
 
-
 export async function getUserByIdHandler(
   request: FastifyRequest<{
     Params: GetUserByIdParamsInput;
@@ -81,12 +82,12 @@ export async function getUserByIdHandler(
   const query = request.query;
 
   try {
-    let params = {id} as { id: string, includePosts?: boolean | undefined };
+    let params = { id } as { id: string; includePosts?: boolean | undefined };
 
-    if (query.includePosts === 'true') params.includePosts = true;
+    if (query.includePosts === "true") params.includePosts = true;
     const user = await getUserByIdService(params.id, params.includePosts);
 
-    reply.send( user );
+    reply.send(user);
   } catch (e) {
     console.log(e);
     return reply.code(500).send(e);
@@ -132,9 +133,67 @@ export async function updateUserHandler(
 
     const updatedUser = await updateUserService(user.id, dataToUpdate);
 
-    reply.send( updatedUser );
+    reply.send(updatedUser);
   } catch (e) {
     console.log("Error during user update:", e);
+    reply.status(500).send({ error: "Internal server error" });
+  }
+}
+
+export async function profilePictureHandler(
+  request: FastifyRequest<{
+    Body: ProfilePictureInput;
+  }>,
+  reply: FastifyReply
+) {
+  const user = request.user;
+  const { profilePicture } = request.body;
+
+  try {
+    if (!user.id) {
+      return reply.status(403).send({
+        error: "Forbidden: You do not have permission",
+      });
+    }
+
+    const updatedUser = await updateUserService(user.id, { profilePicture });
+    reply.send({
+      id: updatedUser.id,
+      profilePicture: updatedUser.profilePicture,
+    });
+  } catch (e) {
+    console.log("Error during user update:", e);
+    reply.status(500).send({ error: "Internal server error" });
+  }
+}
+
+export async function getProfilePictureHandler(
+  request: FastifyRequest,
+  reply: FastifyReply
+) {
+  const user = request.user;
+  try {
+    if (!user.id) {
+      return reply.status(403).send({
+        error: "Forbidden: You do not have permission",
+      });
+    }
+
+    let userPictureProfile = {} as any 
+    
+    userPictureProfile = await getUserPictureService(user.id);
+
+    if (userPictureProfile.Body) {
+      let buff = Buffer.from(userPictureProfile.Body);
+      userPictureProfile = buff.toString('base64');
+    }
+
+    reply.send({
+      id: user.id,
+      profilePicture: userPictureProfile,
+    });
+  } catch (e) {
+    console.log("Error during getting user picture profile:", e);
     reply.status(500).send({ error: "Internal server error" });
   }
 }
