@@ -45,8 +45,9 @@ export async function updateUserService(
   }
 }
 
-export async function getUserByIdService(id: string, includePosts?: boolean) {
+export async function getUserByIdService(id: string, includePosts?: boolean | undefined) {
   try {
+    
     let user = await getUserByIdModel(id, includePosts);
     return user;
   } catch (e) {

@@ -79,12 +79,12 @@ export async function getUserByIdHandler(
   const query = request.query;
 
   try {
-    let params = {id} as any;
+    let params = {id} as { id: string, includePosts?: boolean | undefined };
 
-    if (query.includePosts === 'true') params["includePosts"] = true;
-    const user = await getUserByIdService(params);
+    if (query.includePosts === 'true') params.includePosts = true;
+    const user = await getUserByIdService(params.id, params.includePosts);
 
-    reply.send({ user });
+    reply.send( user );
   } catch (e) {
     console.log(e);
     return reply.code(500).send(e);
@@ -130,7 +130,7 @@ export async function updateUserHandler(
 
     const updatedUser = await updateUserService(user.id, dataToUpdate);
 
-    reply.send({ message: "User updated successfully", user: updatedUser });
+    reply.send( updatedUser );
   } catch (e) {
     console.log("Error during user update:", e);
     reply.status(500).send({ error: "Internal server error" });

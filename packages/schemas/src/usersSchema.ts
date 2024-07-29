@@ -86,7 +86,7 @@ const loginResponseSchema = z.object({
 });
 
 const getUserByIdParamsSchema = z.object({
-  id: z.string().uuid("Invalid ID format, must be a valid UUID"),
+  id: z.string(),
 });
 
 const getUserByIdQuerySchema = z.object({
