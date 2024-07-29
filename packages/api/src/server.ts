@@ -9,6 +9,11 @@ import swagger from "@fastify/swagger";
 import swaggerUi from "@fastify/swagger-ui";
 import { withRefResolver } from "fastify-zod";
 import { authenticateJWT } from "./middlewares/authMiddleware";
+//websocket
+import websocket from "@fastify/websocket";
+import { WebSocket as WS } from "ws";
+
+const clients = new Set<WS>();
 
 declare module "fastify" {
   interface FastifyRequest {
@@ -28,6 +33,14 @@ declare module "@fastify/jwt" {
     };
   }
 }
+
+export const notifyClients = (message: string) => {
+  for (const client of clients) {
+    if (client.readyState === WS.OPEN) {
+      client.send(message);
+    }
+  }
+};
 
 function buildServer() {
   const server = Fastify({ logger: true });
@@ -94,6 +107,70 @@ function buildServer() {
 
   server.register(userRoutes, { prefix: "/users" });
   server.register(postRoutes, { prefix: "/posts" });
+
+  // WebSocket route
+  server.register(websocket);
+
+  server.register(async (fastify) => {
+    fastify.get("/ws", { websocket: true }, (connection, request) => {
+      clients.add(connection);
+
+      connection.on("message", (message: string) => {
+        for (const client of clients) {
+          if (client.readyState === WS.OPEN) {
+            client.send(message);
+          }
+        }
+      });
+
+      connection.on("close", () => {
+        clients.delete(connection);
+      });
+    });
+  });
+
+  server.get("/notifications", (request, reply) => {
+    const serverUrl = process.env.SERVER_URL || "http://localhost:3000";
+    reply.type("text/html").send(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>WebSocket Notifications</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 20px; }
+          #notifications { border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll; }
+          .message { margin-bottom: 10px; }
+        </style>
+      </head>
+      <body>
+        <h1>WebSocket Notifications</h1>
+        <div id="notifications"></div>
+        <script>
+          document.addEventListener('DOMContentLoaded', () => {
+            const ws = new WebSocket('${serverUrl}/ws');
+            const notifications = document.getElementById('notifications');
+            
+            ws.onmessage = (event) => {
+              const message = event.data;
+              const div = document.createElement('div');
+              div.classList.add('message');
+              div.textContent = message;
+              notifications.appendChild(div);
+              notifications.scrollTop = notifications.scrollHeight; // Auto-scroll to the bottom
+            };
+            
+            ws.onerror = (error) => {
+              const div = document.createElement('div');
+              div.classList.add('message');
+              div.textContent = 'WebSocket error: ' + error.message;
+              notifications.appendChild(div);
+            };
+          });
+        </script>
+      </body>
+      </html>
+    `);
+  });
 
   return server;
 }

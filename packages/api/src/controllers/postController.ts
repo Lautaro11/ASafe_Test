@@ -12,6 +12,7 @@ import {
   getPostsService,
   deletePostService,
 } from "services/src/postService";
+import { notifyClients } from "../server";
 
 export async function createPostHandler(
   request: FastifyRequest<{
@@ -24,7 +25,7 @@ export async function createPostHandler(
     const user = request.user;
 
     const post = await createPostService(user.id, { title, content });
-
+    notifyClients(`New post from ${user.username}`);
     reply.status(201).send(post);
   } catch (e) {
     console.log(e);
@@ -70,6 +71,7 @@ export async function updatePostHandler(
   }>,
   reply: FastifyReply
 ) {
+  const user = request.user;
   const post = await getPostByIdService(request.params.id);
   const dataToUpdate = request.body;
 
@@ -77,7 +79,7 @@ export async function updatePostHandler(
     return reply.status(404).send({ error: "Post not found" });
   }
 
-  if (post.authorId !== request.user.id) {
+  if (post.authorId !== user.id) {
     return reply.status(403).send({
       error: "Forbidden: You do not have permission to update this post",
     });
@@ -92,14 +94,14 @@ export async function updatePostHandler(
     let updatedPost = {};
     if (Object.keys(updateData).length > 0) {
       updatedPost = await updatePostService(
-        request.user.id,
+        user.id,
         post.id,
         updateData
       );
     } else {
       updatedPost = post;
     }
-
+    notifyClients(`${user.username} updated post`);
     reply.send(updatedPost);
   } catch (e) {
     console.log("Error during post update:", e);
@@ -114,12 +116,13 @@ export async function deletePostHandler(
   reply: FastifyReply
 ) {
   const post = await getPostByIdService(request.params.id);
+  const user = request.user;
 
   if (!post) {
     return reply.status(404).send({ error: "Post not found" });
   }
 
-  if (post.authorId !== request.user.id) {
+  if (post.authorId !== user.id) {
     return reply.status(403).send({
       error: "Forbidden: You do not have permission to delete this post",
     });
@@ -127,7 +130,7 @@ export async function deletePostHandler(
 
   try {
     const deletedPost = await deletePostService(post.authorId, post.id);
-
+    notifyClients(`${user.username} deleted post`);
     reply.send({ message: "Post deleted successfully" });
   } catch (e) {
     console.log("Error during post deletion:", e);

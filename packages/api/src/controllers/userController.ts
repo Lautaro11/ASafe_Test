@@ -14,6 +14,7 @@ import {
   getUserByIdService,
   getUsersService,
 } from "services/src/userService";
+import { notifyClients } from "../server";
 
 export async function createUserHandler(
   request: FastifyRequest<{
@@ -31,7 +32,7 @@ export async function createUserHandler(
       name,
     });
     console.log("User created successfully");
-
+    notifyClients(`New user ${user.username}`);
     reply.status(201).send(user);
   } catch (e) {
     console.log(e);
@@ -57,6 +58,7 @@ export async function loginHandler(
         username: user.username,
       });
 
+      notifyClients(`${user.username} has logged in`);
       reply.send({ id: user.id, token });
     } else {
       reply.status(401).send({ error: "Invalid email or password" });
