@@ -4,6 +4,9 @@
   "main": "./packages/api/src/index.ts",
   "author": "Lautaro Robles",
   "private": true,
+  "engines": {
+    "node": ">=14.0.0 <16.0.0"
+  },
   "scripts": {
     "bdev": "yarn build && yarn dev",
     "build": "lerna run build",
