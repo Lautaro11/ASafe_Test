@@ -25,7 +25,11 @@ export async function createPostHandler(
     const user = request.user;
 
     const post = await createPostService(user.id, { title, content });
-    notifyClients(`New post from ${user.username}`);
+    try {
+      notifyClients(`New post from ${user.username}`);
+    } catch (error) {
+      console.log("error on create post ws");
+    }
     reply.status(201).send(post);
   } catch (e) {
     console.log(e);
@@ -93,15 +97,15 @@ export async function updatePostHandler(
 
     let updatedPost = {};
     if (Object.keys(updateData).length > 0) {
-      updatedPost = await updatePostService(
-        user.id,
-        post.id,
-        updateData
-      );
+      updatedPost = await updatePostService(user.id, post.id, updateData);
     } else {
       updatedPost = post;
     }
-    notifyClients(`${user.username} updated post`);
+    try {
+      notifyClients(`${user.username} updated post`);
+    } catch (error) {
+      console.log("error on update post ws");
+    }
     reply.send(updatedPost);
   } catch (e) {
     console.log("Error during post update:", e);
@@ -130,7 +134,11 @@ export async function deletePostHandler(
 
   try {
     const deletedPost = await deletePostService(post.authorId, post.id);
-    notifyClients(`${user.username} deleted post`);
+    try {
+      notifyClients(`${user.username} deleted post`);
+    } catch (error) {
+      console.log("error on create post ws");
+    }
     reply.send({ message: "Post deleted successfully" });
   } catch (e) {
     console.log("Error during post deletion:", e);

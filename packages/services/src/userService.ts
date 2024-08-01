@@ -10,6 +10,7 @@ import {
   getUserByIdModel,
   getUserByUsernameModel,
   updateUserModel,
+  deleteUserModel,
 } from "models/src/usersModel";
 import { downloadFileFromS3, uploadToS3 } from "utils/src/s3";
 import { getMimeTypeFromBase64 } from "utils/src/utils";
@@ -137,5 +138,16 @@ export async function getUserPictureService(userId: string) {
   } catch (error) {
     console.log(error);
     throw { message: "Failed to getUserPicture from s3" };
+  }
+}
+
+export async function deleteUserService(userId: string) {
+  try {
+   let deletedUser = await deleteUserModel(userId);
+
+   return deletedUser;
+  } catch (error) {
+    console.log(error);
+    throw { message: "Failed to deleteUserService" };
   }
 }

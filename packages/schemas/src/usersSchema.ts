@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { buildJsonSchemas } from "fastify-zod";
-import { postCore } from "./postsSchema";
+import { postCore } from "schemas/src/postsSchema";
 
 const userCore = {
   email: z
@@ -45,6 +45,17 @@ const updateUserResponseSchema = z.object({
   updatedAt: z.string().datetime().optional(),
 });
 
+export const deleteUserResponseSchema = z.object({
+  id: z.string(),
+  ...userCore,
+  password: z.string(),
+  username: z.string(),
+  description: z.string().optional(),
+  profilePicture: z.string().optional(),
+  createdAt: z.string().datetime(),
+  updatedAt: z.string().datetime().optional(),
+});
+
 const createUserSchema = z.object({
   ...userCore,
   password: z
@@ -59,7 +70,7 @@ const createUserSchema = z.object({
   }),
 });
 
-const createUserResponseSchema = z.object({
+export const createUserResponseSchema = z.object({
   id: z.string(),
   ...userCore,
   password: z.string(),
@@ -80,7 +91,7 @@ const loginSchema = z.object({
   password: z.string(),
 });
 
-const loginResponseSchema = z.object({
+export const loginResponseSchema = z.object({
   id: z.string(),
   token: z.string(),
 });
@@ -130,6 +141,7 @@ export const { schemas: userSchemas, $ref } = buildJsonSchemas(
   {
     createUserSchema,
     createUserResponseSchema,
+    deleteUserResponseSchema,
     loginSchema,
     loginResponseSchema,
     updateUserResponseSchema,

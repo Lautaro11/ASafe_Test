@@ -8,6 +8,7 @@ import {
   updateUserHandler,
   profilePictureHandler,
   getProfilePictureHandler,
+  deleteUserHandler,
 } from "../controllers/userController";
 
 async function userRoutes(server: FastifyInstance) {
@@ -57,6 +58,25 @@ async function userRoutes(server: FastifyInstance) {
       },
     },
     updateUserHandler
+  );
+
+  server.delete(
+    "/",
+    {
+      preHandler: server.authenticateJWT,
+      schema: {
+        tags: ["Users"],
+        response: {
+          200: $ref("deleteUserResponseSchema"),
+        },
+        security: [
+          {
+            BearerAuth: [],
+          },
+        ],
+      },
+    },
+    deleteUserHandler
   );
 
   server.get(

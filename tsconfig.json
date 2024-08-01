@@ -33,8 +33,8 @@
       "models/*": ["packages/models/src/*"],
       "utils/*": ["packages/utils/src/*"],
       "services/*": ["packages/services/src/*"],
-      "api/*": ["packages/api/*"],
-      "schemas/*": ["packages/schemas/src/*"],
+      "api/*": ["packages/api/src/*"],
+      "schemas/*": ["packages/schemas/src/*"]
     },
     // "rootDirs": [],                                   /* Allow multiple folders to be treated as one when resolving modules. */
     // "typeRoots": [],                                  /* Specify multiple folders that act like './node_modules/@types'. */
@@ -50,7 +50,7 @@
     // "noResolve": true,                                /* Disallow 'import's, 'require's or '<reference>'s from expanding the number of files TypeScript should add to a project. */
 
     /* JavaScript Support */
-    "allowJs": true,
+    // "allowJs": true,
     // "checkJs": true,                                  /* Enable error reporting in type-checked JavaScript files. */
     // "maxNodeModuleJsDepth": 1,                        /* Specify the maximum folder depth used for checking JavaScript files from 'node_modules'. Only applicable with 'allowJs'. */
 
@@ -112,5 +112,5 @@
     "skipLibCheck": true /* Skip type checking all .d.ts files. */
   },
   "include": ["packages/**/*"],
-  "exclude": ["node_modules", "dist"]
+  "exclude": ["node_modules", "dist", "**/*.test.ts", "jest.config.ts"]
 }

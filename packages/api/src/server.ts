@@ -1,4 +1,4 @@
-import Fastify, { FastifyRequest, FastifyReply } from "fastify";
+import Fastify from "fastify";
 import fjwt, { JWT } from "@fastify/jwt";
 import { userSchemas } from "schemas/src/usersSchema";
 import { postSchemas } from "schemas/src/postsSchema";
@@ -36,10 +36,14 @@ declare module "@fastify/jwt" {
 }
 
 export const notifyClients = (message: string) => {
-  for (const client of clients) {
-    if (client.readyState === WS.OPEN) {
-      client.send(message);
+  try {
+    for (const client of clients) {
+      if (client.readyState === WS.OPEN) {
+        client.send(message);
+      }
     }
+  } catch (error) {
+    console.log("Error on ws")
   }
 };
 

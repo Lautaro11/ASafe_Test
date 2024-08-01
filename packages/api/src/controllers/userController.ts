@@ -11,6 +11,7 @@ import {
 import {
   createUserService,
   updateUserService,
+  deleteUserService,
   loginService,
   getUserByIdService,
   getUsersService,
@@ -34,7 +35,11 @@ export async function createUserHandler(
       name,
     });
     console.log("User created successfully");
-    notifyClients(`New user ${user.username}`);
+    try {
+      notifyClients(`New user ${user.username}`);
+    } catch (error) {
+      console.log("error on createUser ws")
+    }
     reply.status(201).send(user);
   } catch (e) {
     console.log(e);
@@ -60,7 +65,11 @@ export async function loginHandler(
         username: user.username,
       });
 
-      notifyClients(`${user.username} has logged in`);
+      try {
+        notifyClients(`${user.username} has logged in`);
+      } catch (error) {
+        console.log("error on login ws")
+      }
       reply.send({ id: user.id, token });
     } else {
       reply.status(401).send({ error: "Invalid email or password" });
@@ -194,6 +203,27 @@ export async function getProfilePictureHandler(
     });
   } catch (e) {
     console.log("Error during getting user picture profile:", e);
+    reply.status(500).send({ error: "Internal server error" });
+  }
+}
+
+export async function deleteUserHandler(
+  request: FastifyRequest,
+  reply: FastifyReply
+) {
+  const user = request.user;
+
+  try {
+    if (!user.id) {
+      return reply.status(403).send({
+        error: "Forbidden: You do not have permission",
+      });
+    }
+
+    const deletedUser = await deleteUserService(user.id);
+    reply.send(deletedUser)
+  } catch (e) {
+    console.log("Error during user update:", e);
     reply.status(500).send({ error: "Internal server error" });
   }
 }

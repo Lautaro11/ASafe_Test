@@ -41,7 +41,7 @@ const createPostSchema = z.object({
   content: postCore.content,
 });
 
-const createPostResponseSchema = z.object({
+export const createPostResponseSchema = z.object({
   id: postCore.id,
   title: postCore.title,
   content: postCore.content,
@@ -65,7 +65,7 @@ const getPostByIdResponseSchema = z.object({
   updatedAt: z.string().datetime().optional(),
 });
 
-const deletePostResponseSchema = z.object({
+export const deletePostResponseSchema = z.object({
   message: z.string(),
 });
 
