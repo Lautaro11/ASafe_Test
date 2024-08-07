@@ -99,7 +99,7 @@ function buildServer() {
   );
 
   server.register(swaggerUi, {
-    routePrefix: "/docs",
+    routePrefix: "/",
     uiConfig: {
       docExpansion: "none",
       deepLinking: false,

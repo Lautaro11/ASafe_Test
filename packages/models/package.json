@@ -13,5 +13,7 @@
     "typescript": "^5.5.3"
   },
   "scripts": {
+    "build": "tsc",
+    "start": "npx prisma migrate deploy"
   }
 }

@@ -3,10 +3,14 @@ import buildServer from "./server";
 const server = buildServer();
 
 export async function start() {
-  const PORT = parseInt(process.env.PORT || '3000', 10);
+  let port = process.env.PORT || 4000;
+  if (typeof port === "string") {
+    port = parseInt(port);
+  }
   try {
-    await server.listen({ port: PORT });
-    server.log.info(`Server listening on http://localhost:3000`);
+    await server.listen({ port: port });
+    const addressInfo = server.server.address();
+    // server.log.info(`Server listening at ${addressInfo}`);
     return server;
   } catch (err) {
     server.log.error(err);

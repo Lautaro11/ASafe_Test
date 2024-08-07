@@ -1,7 +1,7 @@
 {
   "name": "ASafe_Test",
   "version": "1.0.0",
-  "main": "./packages/api/src/index.ts",
+  "main": ".",
   "author": "Lautaro Robles",
   "private": true,
   "engines": {
@@ -9,6 +9,7 @@
   },
   "scripts": {
     "bdev": "yarn build && yarn dev",
+    "probando": "yarn run packages/api/src/index.ts",
     "build": "lerna run build",
     "start": "lerna run start",
     "dev": "lerna run dev --scope api",

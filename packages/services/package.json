@@ -11,5 +11,7 @@
     "@types/bcrypt": "^5.0.2",
     "typescript": "^5.5.3"
   },
-  "scripts": {}
+  "scripts": {
+    "build": "tsc"
+  }
 }
