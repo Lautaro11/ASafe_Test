@@ -11,7 +11,7 @@
     "bdev": "yarn build && yarn dev",
     "probando": "yarn run packages/api/src/index.ts",
     "build": "lerna run build",
-    "start": "lerna run start",
+    "appstart": "lerna run start",
     "dev": "lerna run dev --scope api",
     "start:api": "lerna run start --scope api",
     "bstart": "yarn build && yarn start",
