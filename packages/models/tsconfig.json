@@ -1,9 +1,9 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "outDir": "dist",
+    "outDir": "../../dist/models",
     "rootDir": "."
   },
   "include": ["**/*"],
-  "exclude": ["dist", "node_modules"]
+  "exclude": ["node_modules"]
 }

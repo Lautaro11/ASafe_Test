@@ -14,7 +14,7 @@
     "appstart": "lerna run start",
     "dev": "lerna run dev --scope api",
     "start:api": "lerna run start --scope api",
-    "bstart": "yarn build && yarn start",
+    "bstart": "yarn build && yarn appstart",
     "test": "lerna run test --scope api"
   },
   "workspaces": [

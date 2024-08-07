@@ -4,7 +4,7 @@
     "esModuleInterop": true,
     "module": "nodenext",
     "target": "es6",
-    "outDir": "dist",
+    "outDir": "../../dist/api",
     "rootDir": ".",
     "strict": true
   },
