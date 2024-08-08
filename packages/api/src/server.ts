@@ -43,7 +43,7 @@ export const notifyClients = (message: string) => {
       }
     }
   } catch (error) {
-    console.log("Error on ws");
+    console.log("Error on ws")
   }
 };
 
@@ -145,14 +145,8 @@ function buildServer() {
   });
 
   server.get("/notifications", (request, reply) => {
-    const serverAddress = server.server.address();
-    if (serverAddress && typeof serverAddress === "object") {
-      const { address, port, family } = serverAddress;
-      const formattedAddress =
-        family === "IPv6" && address === "::1" ? `[::1]` : address;
-      const serverUrl = `http://${formattedAddress}:${port}`;
-
-      reply.type("text/html").send(`
+    const serverUrl = process.env.SERVER_URL || "http://localhost:3000/ws";
+    reply.type("text/html").send(`
       <!DOCTYPE html>
       <html>
       <head>
@@ -168,7 +162,7 @@ function buildServer() {
         <div id="notifications"></div>
         <script>
           document.addEventListener('DOMContentLoaded', () => {
-            const ws = new WebSocket('${serverUrl}/ws');
+            const ws = new WebSocket('${serverUrl}');
             const notifications = document.getElementById('notifications');
             
             ws.onmessage = (event) => {
@@ -191,7 +185,6 @@ function buildServer() {
       </body>
       </html>
     `);
-    }
   });
 
   return server;

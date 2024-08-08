@@ -3,12 +3,17 @@ import buildServer from "./server";
 const server = buildServer();
 
 export async function start() {
-  let port = process.env.PORT || 4000;
+  let port = process.env.PORT || 3000;
   if (typeof port === "string") {
     port = parseInt(port);
   }
+
+  let host = process.env.HOST;
+  
   try {
-    await server.listen({ port: port, host: "0.0.0.0" });
+    let serverParams = { port } as any;
+    if (host) {serverParams.host = host};
+    await server.listen(serverParams);
     const serverAddress = server.server.address();
     if (serverAddress && typeof serverAddress === "object") {
       const { address, port, family } = serverAddress;
