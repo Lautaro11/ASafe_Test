@@ -151,7 +151,6 @@ function buildServer() {
       const formattedAddress =
         family === "IPv6" && address === "::1" ? `[::1]` : address;
       const serverUrl = `http://${formattedAddress}:${port}`;
-      console.log("serverUrl", serverUrl);
 
       reply.type("text/html").send(`
       <!DOCTYPE html>
