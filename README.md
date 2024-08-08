@@ -35,7 +35,7 @@ The project is organized as a monorepo with separate packages for API, services,
 	+ `services/`: business logic, including services for posts and users
 	+ `models/`: data models, including posts and users
 	+ `schemas/`: schema definitions using Zod
-	+ `utils/`: utility functions, including file upload/download to S3
+	+ `utils/`: utility functions, including file upload/download to Backblaze B2 (simulating AWS S3)
 * `.dist/`: contains transpiled code
 * `.env`: environment variables
 * `start.js`: script to start the application
