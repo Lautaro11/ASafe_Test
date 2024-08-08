@@ -10,12 +10,13 @@
   "scripts": {
     "bdev": "yarn build && yarn dev",
     "probando": "yarn run packages/api/src/index.ts",
-    "build": "lerna run build",
+    "build": "lerna run build --stream",
     "appstart": "lerna run start",
     "dev": "lerna run dev --scope api",
     "start:api": "lerna run start --scope api",
-    "bstart": "yarn build && yarn appstart",
-    "test": "lerna run test --scope api"
+    "bstart": "yarn build && yarn start",
+    "test": "lerna run test --scope api",
+    "start": "node start.js"
   },
   "workspaces": [
     "packages/*"
@@ -23,5 +24,8 @@
   "license": "MIT",
   "dependencies": {
     "lerna": "^8.1.7"
+  },
+  "devDependencies": {
+    "tsconfig-paths": "^4.2.0"
   }
 }

@@ -1,4 +1,4 @@
-import * as usersSchemas from "schemas/src/usersSchema";
-import * as postsSchemas from "schemas/src/usersSchema";
+import * as usersSchemas from "./src/usersSchema";
+import * as postsSchemas from "./src/usersSchema";
 
 export { usersSchemas, postsSchemas };
