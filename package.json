@@ -9,7 +9,7 @@
   },
   "scripts": {
     "bdev": "yarn build && yarn dev",
-    "probando": "yarn run packages/api/src/index.ts",
+    "probando": "ts-node packages/api/src/index.ts",
     "build": "lerna run build --stream",
     "appstart": "lerna run start",
     "dev": "lerna run dev --scope api",

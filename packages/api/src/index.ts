@@ -10,6 +10,7 @@ export async function start() {
   try {
     await server.listen({ port: port });
     const addressInfo = server.server.address();
+    console.log("address", addressInfo?.toString());
     // server.log.info(`Server listening at ${addressInfo}`);
     return server;
   } catch (err) {

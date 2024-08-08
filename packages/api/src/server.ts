@@ -43,7 +43,7 @@ export const notifyClients = (message: string) => {
       }
     }
   } catch (error) {
-    console.log("Error on ws")
+    console.log("Error on ws");
   }
 };
 
@@ -145,8 +145,15 @@ function buildServer() {
   });
 
   server.get("/notifications", (request, reply) => {
-    const serverUrl = process.env.SERVER_URL || "http://localhost:3000";
-    reply.type("text/html").send(`
+    const serverAddress = server.server.address();
+    if (serverAddress && typeof serverAddress === "object") {
+      const { address, port, family } = serverAddress;
+      const formattedAddress =
+        family === "IPv6" && address === "::1" ? `[::1]` : address;
+      const serverUrl = `http://${formattedAddress}:${port}`;
+      console.log("serverUrl", serverUrl);
+
+      reply.type("text/html").send(`
       <!DOCTYPE html>
       <html>
       <head>
@@ -185,6 +192,7 @@ function buildServer() {
       </body>
       </html>
     `);
+    }
   });
 
   return server;
