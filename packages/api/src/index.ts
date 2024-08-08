@@ -8,10 +8,7 @@ export async function start() {
     port = parseInt(port);
   }
   try {
-    await server.listen({ port: port });
-    const addressInfo = server.server.address();
-    console.log("address", addressInfo?.toString());
-    // server.log.info(`Server listening at ${addressInfo}`);
+    await server.listen({ port: port, host: '0.0.0.0' });
     return server;
   } catch (err) {
     server.log.error(err);
